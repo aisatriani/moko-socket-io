@@ -4,6 +4,7 @@
 
 package dev.icerock.moko.socket
 
+import io.socket.client.Ack
 import io.socket.client.IO
 import io.socket.engineio.client.transports.Polling
 import io.socket.engineio.client.transports.WebSocket
@@ -65,6 +66,14 @@ actual class Socket actual constructor(
 
     actual fun emit(event: String, data: String) {
         socketIo.emit(event, data)
+    }
+
+    fun emit(event: String, data: JsonObject, ack: (Any) -> Unit) {
+        socketIo.emit(event,JSONObject(data.toString()),object : Ack {
+            override fun call(vararg args: Any?) {
+                ack(args)
+            }
+        })
     }
 
     actual fun connect() {
